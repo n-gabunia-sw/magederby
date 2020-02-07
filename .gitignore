@@ -17,3 +17,4 @@
 /setup
 /phpserver
 node_modules
+env.php
