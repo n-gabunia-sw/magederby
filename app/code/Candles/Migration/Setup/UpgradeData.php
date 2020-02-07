@@ -147,18 +147,30 @@ class UpgradeData implements UpgradeDataInterface
     {
         $setup->startSetup();
 
-        $website = $this->getWebsite();
-        $group = $this->getGroup($website);
+        switch ($context->getVersion()) {
+        case '0.0.1':
+            $website = $this->getWebsite();
+            $group = $this->getGroup($website);
 
-        foreach ($this->storesData as $storeData) {
-            $this->createStore($website, $group, $storeData);
+            foreach ($this->storesData as $storeData) {
+                $this->createStore($website, $group, $storeData);
+            }
+
+            $this->setDefaultProperties();
+            $this->setStoreProperties();
+            $this->removeHtmlSuffix();
+        case '0.0.2':
+            $this->addDefaultCountriesAndCurrenciesToStores();
         }
 
-        $this->setDefaultProperties();
-        $this->setStoreProperties();
-        $this->removeHtmlSuffix();
-
         $setup->endSetup();
+    }
+
+    private function addDefaultCountriesAndCurrenciesToStores()
+    {
+        $this->coreConfigWriter->save('currency/options/base', 'USD', 'default', 0);
+        $this->coreConfigWriter->save('currency/options/default', 'USD', 'default', 0);
+        $this->coreConfigWriter->save('currency/options/allow', 'USD,GBP', 'default', 0);
     }
 
     /**
@@ -224,9 +236,17 @@ class UpgradeData implements UpgradeDataInterface
      * Sets default currencies
      */
     private function setDefaultProperties() {
-        $this->coreConfigWriter->save('currency/options/base', 'USD', 'default', 0);
-        $this->coreConfigWriter->save('currency/options/default', 'USD', 'default', 0);
-        $this->coreConfigWriter->save('currency/options/allow', 'USD,GBP', 'default', 0);
+        $ukStore = $this->storeFactory->create();
+        $this->storeResourceModel->load($ukStore, 'default', 'code');
+
+        $usStore = $this->storeFactory->create();
+        $this->storeResourceModel->load($usStore, 'us', 'code');
+
+        $this->coreConfigWriter->save('general/country/default', 'GB', 'stores', $ukStore->getId());
+        $this->coreConfigWriter->save('currency/options/default', 'GBP', 'stores', $ukStore->getId());
+
+        $this->coreConfigWriter->save('general/country/default', 'US', 'stores', $usStore->getId());
+        $this->coreConfigWriter->save('currency/options/default', 'USD', 'stores', $ukStore->getId());
     }
 
     /**
