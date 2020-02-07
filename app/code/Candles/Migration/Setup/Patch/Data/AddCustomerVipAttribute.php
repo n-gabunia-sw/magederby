@@ -2,16 +2,13 @@
 
 namespace Candles\Migration\Setup\Patch\Data;
 
-use Magento\Catalog\Plugin\Model\Attribute\Backend\AttributeValidation;
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
-use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Customer\Model\Customer;
 use Magento\Eav\Model\ResourceModel\Entity\Attribute as AttributeResourceModel;
-use Zend_Validate_Exception;
 
 class AddCustomerVipAttribute implements DataPatchInterface
 {
@@ -62,7 +59,6 @@ class AddCustomerVipAttribute implements DataPatchInterface
     /**
      * @inheritDoc
      * @throws LocalizedException
-     * @throws Zend_Validate_Exception
      */
     public function apply(): void
     {
@@ -74,10 +70,10 @@ class AddCustomerVipAttribute implements DataPatchInterface
             Customer::ENTITY,
             'is_vip',
             [
-                'type' => Table::TYPE_BOOLEAN,
+                'type' => 'int',
                 'label' => 'Customer is VIP',
                 'input' => 'boolean',
-                'required' => true,
+                'required' => false,
                 'visible' => true,
                 'user_defined' => false,
                 'position' => 10,
