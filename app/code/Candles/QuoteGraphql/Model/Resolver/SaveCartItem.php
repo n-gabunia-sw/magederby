@@ -23,6 +23,7 @@ use Magento\CatalogInventory\Api\StockStatusRepositoryInterface;
 use Magento\Sales\Model\Order;
 use \Magento\Sales\Model\Order\ItemFactory;
 use \Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
+use \Magento\Customer\Api\CustomerRepositoryInterface;
 
 /**
  * Class SaveCartItem
@@ -59,6 +60,11 @@ class SaveCartItem extends  SourceSaveCartItem
     private $orderCollection;
 
     /**
+     * @var CustomerRepositoryInterface
+     */
+    private $customerRepository;
+
+    /**
      * SaveCartItem constructor.
      *
      * @param QuoteIdMaskFactory             $quoteIdMaskFactory
@@ -81,7 +87,8 @@ class SaveCartItem extends  SourceSaveCartItem
         StockStatusRepositoryInterface $stockStatusRepository,
         Order $orderModel,
         ItemFactory $orderItem,
-        CollectionFactory $orderCollection
+        CollectionFactory $orderCollection,
+        CustomerRepositoryInterface $customerRepository
     ) {
         parent::__construct(
             $quoteIdMaskFactory,
@@ -97,10 +104,9 @@ class SaveCartItem extends  SourceSaveCartItem
         $this->quoteIdMaskFactory = $quoteIdMaskFactory;
         $this->quoteRepository = $quoteRepository;
         $this->orderModel = $orderModel;
-
         $this->orderItem = $orderItem;
         $this->orderCollection = $orderCollection;
-
+        $this->customerRepository = $customerRepository;
     }
 
     /**
@@ -120,7 +126,6 @@ class SaveCartItem extends  SourceSaveCartItem
         array $args = null
     ) {
         $requestCartItem = $args['cartItem'];
-
         $quoteId = isset($args['guestCartId'])
             ? $this->getGuestQuoteId($args['guestCartId'])
             : $this->overriderCartId->getOverriddenValue();
@@ -130,7 +135,10 @@ class SaveCartItem extends  SourceSaveCartItem
         $product = $this->productRepository->get($this->getSku($requestCartItem));;
         $attribute = $product->getAttributeText('brand');
         if ($attribute == self::DE_GOUGE) {
-            $customerId = 7; // TODO: Get customerId from args
+            $customerId = 9; // TODO: Get customerId from args
+            $customer = $this->customerRepository->getById($customerId);
+            $attr = $customer->getCustomAttributes();
+            print_r($attr);
             if (!$customerId) {
                 throw new GraphQlInputException(
                     new Phrase(
@@ -167,7 +175,11 @@ class SaveCartItem extends  SourceSaveCartItem
         return parent::resolve($field, $context, $info, $value, $args);
     }
 
-    private function itemDateIsValid($itemDate)
+    /**
+     * @param $itemDate
+     * @return bool
+     */
+    private function itemDateIsValid($itemDate):bool
     {
         $currentDate = date('Y');
         $itemDateYear = date('Y', strtotime($itemDate));
