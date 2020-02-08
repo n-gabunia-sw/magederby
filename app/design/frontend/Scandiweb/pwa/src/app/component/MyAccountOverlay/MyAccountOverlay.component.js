@@ -13,7 +13,6 @@ export class MyAccountOverlay extends SourceComponent.WrappedComponent {
         const { state, isLoading } = this.props;
         const { render, title } = this.renderMap[state];
 
-        console.log({ state, isLoading });
         return (
             <div block="MyAccountOverlay" elem="Action" mods={ { state, isLoading } }>
                 <p block="MyAccountOverlay" elem="Heading">{ title }</p>
