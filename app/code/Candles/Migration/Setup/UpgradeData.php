@@ -25,6 +25,8 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Theme\Model\ResourceModel\Theme\CollectionFactory;
 use Magento\Theme\Model\Theme;
+use Magento\Customer\Setup\CustomerSetupFactory;
+use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 
 /**
  * Class InstallData
@@ -66,6 +68,16 @@ class UpgradeData implements UpgradeDataInterface
      * @var ManagerInterface
      */
     private $eventManager;
+
+    /**
+     * @var CustomerSetupFactory
+     */
+    protected $customerSetupFactory;
+
+    /**
+     * @var AttributeSetFactory
+     */
+    private $attributeSetFactory;
 
     /**
      * Data used to create store views.
@@ -111,6 +123,8 @@ class UpgradeData implements UpgradeDataInterface
      * @param WriterInterface $coreConfigWriter
      * @param StoreManagerInterface $storeManager
      * @param CollectionFactory $themeCollectionFactory
+     * @param CustomerSetupFactory $customerSetupFactory
+     * @param AttributeSetFactory $attributeSetFactory
      */
     public function __construct(
         WebsiteFactory $websiteFactory,
@@ -122,7 +136,9 @@ class UpgradeData implements UpgradeDataInterface
         ManagerInterface $eventManager,
         WriterInterface $coreConfigWriter,
         StoreManagerInterface $storeManager,
-        CollectionFactory $themeCollectionFactory
+        CollectionFactory $themeCollectionFactory,
+        CustomerSetupFactory $customerSetupFactory,
+        AttributeSetFactory $attributeSetFactory
     ) {
         $this->websiteFactory = $websiteFactory;
         $this->websiteResourceModel = $websiteResourceModel;
@@ -134,6 +150,8 @@ class UpgradeData implements UpgradeDataInterface
         $this->coreConfigWriter = $coreConfigWriter;
         $this->storeManager = $storeManager;
         $this->themeCollectionFactory = $themeCollectionFactory;
+        $this->customerSetupFactory = $customerSetupFactory;
+        $this->attributeSetFactory = $attributeSetFactory;
     }
 
     /**
@@ -159,9 +177,13 @@ class UpgradeData implements UpgradeDataInterface
             $this->setDefaultProperties();
             $this->setStoreProperties();
             $this->removeHtmlSuffix();
+            break;
         case '0.0.2':
             $this->addDefaultCountriesAndCurrenciesToStores();
+            break;
         }
+
+        $this->createIsVipCustomerAttribute($setup);
 
         $setup->endSetup();
     }
@@ -306,5 +328,39 @@ class UpgradeData implements UpgradeDataInterface
         foreach ($paths as $path) {
             $this->coreConfigWriter->save($path, null, 'default', '0');
         }
+    }
+
+    public function createIsVipCustomerAttribute(ModuleDataSetupInterface $setup)
+    {
+        $customerSetup = $this->customerSetupFactory->create(['setup' => $setup]);
+
+        $customerEntity = $customerSetup->getEavConfig()->getEntityType('customer');
+        $attributeSetId = $customerEntity->getDefaultAttributeSetId();
+
+        $attributeSet = $this->attributeSetFactory->create();
+        $attributeGroupId = $attributeSet->getDefaultGroupId($attributeSetId);
+
+        $customerSetup->addAttribute(\Magento\Customer\Model\Customer::ENTITY, 'is_vip', [
+            'type' => 'int',
+            'label' => 'Customer is vip',
+            'input' => 'boolean',
+            "source" => '',
+            'required' => true,
+            'default' => 0,
+            'visible' => true,
+            'user_defined' => true,
+            'sort_order' => 200,
+            'position' => 200,
+            'system' => false,
+        ]);
+
+        $document = $customerSetup->getEavConfig()->getAttribute(\Magento\Customer\Model\Customer::ENTITY, 'is_vip')
+            ->addData([
+                'attribute_set_id' => $attributeSetId,
+                'attribute_group_id' => $attributeGroupId,
+                'used_in_forms' => ['adminhtml_customer', 'customer_account_create', 'customer_account_edit'],
+            ]);
+
+        $document->save();
     }
 }
