@@ -252,5 +252,33 @@ return [
         'Temando_Shipping' => 1,
         'Vertex_Tax' => 1,
         'Yotpo_Yotpo' => 1
+    ],
+    'system' => [
+        'stores' => [
+            'default' => [
+                'web' => [
+                    'unsecure' => [
+                        'base_url' => 'http://scandipwa.local/',
+                        'base_link_url' => 'http://scandipwa.local/'
+                    ],
+                    'secure' => [
+                        'base_url' => 'https://scandipwa.local/',
+                        'base_link_url' => 'https://scandipwa.local/'
+                    ]
+                ]
+            ],
+            'us' => [
+                'web' => [
+                    'unsecure' => [
+                        'base_url' => 'http://us-scandipwa.local/',
+                        'base_link_url' => 'http://us-scandipwa.local/'
+                    ],
+                    'secure' => [
+                        'base_url' => 'https://us-scandipwa.local/',
+                        'base_link_url' => 'https://us-scandipwa.local/'
+                    ]
+                ]
+            ]
+        ]
     ]
 ];
