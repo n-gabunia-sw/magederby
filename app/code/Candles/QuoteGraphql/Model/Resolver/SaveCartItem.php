@@ -32,7 +32,7 @@ use \Magento\Customer\Api\CustomerRepositoryInterface;
  */
 class SaveCartItem extends  SourceSaveCartItem
 {
-    private const DE_GOUGE = 'DeGouge';
+    private const DE_GOUGE = 'DeGouges';
 
     /**
      * @var QuoteIdMaskFactory
