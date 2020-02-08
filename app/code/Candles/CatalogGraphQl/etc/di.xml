@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category Candles
+ * @package Candles/CatalogGraphQl
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="ScandiPWA\CatalogGraphQl\Plugin\Resolver\Products\FilterArgument\ProductEntityAttributesForAst">
+        <arguments>
+            <argument name="attributes" xsi:type="array">
+                <item name="brand" xsi:type="string">brand</item>
+                <item name="size" xsi:type="string">size</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Catalog\Model\ResourceModel\Product\Collection">
+        <plugin name="candles_cataloggraphql_add_filter_attributes"
+                type="Candles\CatalogGraphQl\Plugin\Model\ResourceModel\Product\Collection"/>
+    </type>
+</config>

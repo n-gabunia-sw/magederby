@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category Candles
+ * @package Candles/CatalogGraphQl
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Candles_CatalogGraphQl" setup_version="0.1.5">
+        <sequence>
+            <module name="Magento_CatalogGraphQl"/>
+            <module name="ScandiPWA_CatalogGraphQl"/>
+        </sequence>
+    </module>
+</config>

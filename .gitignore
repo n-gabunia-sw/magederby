@@ -18,3 +18,5 @@
 /phpserver
 node_modules
 env.php
+.idea
+.php_cs.cache

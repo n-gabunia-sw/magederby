@@ -1,0 +1,4 @@
+input ProductFilterInput {
+    brand: FilterTypeInput @doc(description: "Product brand")
+    size: FilterTypeInput @doc(description: "Product size")
+}
