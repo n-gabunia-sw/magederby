@@ -37,7 +37,6 @@ export class AddToCartContainer extends SourceAddToCartContainer {
         const customer = BrowserDatabase.getItem(CUSTOMER) || {};
         const userId = customer.id ? customer.id : null;
 
-        console.log(userId);
         const { variants, type_id } = product;
 
         if (!this._validateAddToCart()) {
