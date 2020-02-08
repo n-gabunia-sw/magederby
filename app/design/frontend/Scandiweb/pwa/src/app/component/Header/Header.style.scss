@@ -3,7 +3,7 @@
     --header-color: var(--gold-color);
     --header-icon-stroke-width: 1px;
     --header-search-clear-background: #838383;
-    --header-desktop-button-color: #f26323;
+    --header-desktop-button-color: #ffe100;
     --header-height: calc(50px + env(safe-area-inset-top));
     --header-nav-height: 50px;
     --header-logo-width: 200px;
@@ -226,7 +226,7 @@
 
     &-MinicartItemCount {
         position: absolute;
-        color: var(--header-background);
+        color: var(--header-color);
         background: var(--primary-base-color);
         display: inline-block;
         border-radius: 7px;
