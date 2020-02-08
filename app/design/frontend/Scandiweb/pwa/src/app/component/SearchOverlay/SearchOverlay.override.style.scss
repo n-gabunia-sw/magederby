@@ -1,0 +1,29 @@
+.SearchOverlay {
+    &-MoreLink {
+        margin-bottom: 0;
+        background-color: var(--search-criteria-background);
+        color: var(--search-criteria-label-color);
+        padding: 0;
+        max-height: 0;
+
+        opacity: 0;
+        transition: opacity 200ms;
+        will-change: max-height, padding, opacity;
+        overflow: hidden;
+
+        &_isVisible {
+            opacity: 1;
+            padding: .7rem 1rem .5rem;
+            max-height: 100px;
+        }
+
+        a {
+            color: var(--search-criteria-label-color);
+        }
+
+        strong {
+            color: var(--search-criteria-search-term-color);
+            margin-left: 0;
+        }
+    }
+}

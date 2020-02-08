@@ -1,7 +1,9 @@
 import SourceComponent from 'SourceComponent/SearchOverlay/SearchOverlay.component';
 import Link from 'Component/Link';
 import Image from 'Component/Image';
+import Overlay from 'Component/Overlay';
 import media, { PRODUCT_MEDIA } from 'Util/Media';
+import './SearchOverlay.override.style.scss';
 
 export default class SearchOverlay extends SourceComponent {
     renderSearchItem(product, i) {
@@ -49,6 +51,44 @@ export default class SearchOverlay extends SourceComponent {
                     </figure>
                 </Link>
             </li>
+        );
+    }
+
+    renderMoreButton = () => {
+        const { searchCriteria, searchResults, isLoading } = this.props;
+
+        if (!searchCriteria || !searchResults.length || isLoading || this.timeout) return null;
+
+        return (
+            <p
+              block="SearchOverlay"
+              elem="MoreLink"
+              mods={ { isVisible: !!searchCriteria } }
+            >
+                <Link to={ `/search/${searchCriteria}`} onClick={ this.handleItemClick }>
+                    { __('See more results for: ') }
+                    <strong>{ searchCriteria }</strong>
+                </Link>
+            </p>
+        );
+    };
+
+    render() {
+        return (
+            <Overlay
+              id="search"
+              mix={ { block: 'SearchOverlay' } }
+            >
+                { this.renderSearchCriteria() }
+                <article
+                  block="SearchOverlay"
+                  elem="Results"
+                  aria-label="Search results"
+                >
+                    { this.renderSearchResults() }
+                </article>
+                { this.renderMoreButton() }
+            </Overlay>
         );
     }
 }
