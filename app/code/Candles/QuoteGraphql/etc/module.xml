@@ -5,6 +5,7 @@
     <module name="Candles_QuoteGraphql" setup_version="0.0.1">
         <sequence>
             <module name="ScandiPWA_QuoteGraphQl"/>
+            <module name="Magento_QuoteGraphQl"/>
         </sequence>
     </module>
 </config>

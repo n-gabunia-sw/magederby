@@ -131,13 +131,11 @@ class SaveCartItem extends  SourceSaveCartItem
             : $this->overriderCartId->getOverriddenValue();
         $quote = $this->quoteRepository->getActive($quoteId);
         ['qty' => $qty] = $requestCartItem;
+        $customerId = $requestCartItem['userId'];
 
         $product = $this->productRepository->get($this->getSku($requestCartItem));;
         $attribute = $product->getAttributeText('brand');
         if ($attribute == self::DE_GOUGE) {
-            $customerId = 9; // TODO: Get customerId from args
-            $customer = $this->customerRepository->getById($customerId);
-            $isVip = $customer->getCustomAttribute('is_vip')->getValue();
             if (!$customerId) {
                 throw new GraphQlInputException(
                     new Phrase(
@@ -145,6 +143,10 @@ class SaveCartItem extends  SourceSaveCartItem
                     )
                 );
             }
+
+            $customer = $this->customerRepository->getById($customerId);
+            $isVip = $customer->getCustomAttribute('is_vip')->getValue();
+
             if (!$isVip) {
                 $ordercollection = $this->orderCollection->create()->addFieldToFilter('customer_id', $customerId);
                 $productQtyOrderedByUser = 0;
@@ -163,9 +165,7 @@ class SaveCartItem extends  SourceSaveCartItem
                 if (((int)$quote->getItemsQty() + $qty + $productQtyOrderedByUser) > 5) {
                     throw new GraphQlInputException(
                         new Phrase(
-                            'You can buy only 5 pieces of this item per year. 
-                            You have already bought '
-                            . $productQtyOrderedByUser
+                            'You can buy only 5 pieces of this item per year'
                         )
                     );
                 }
