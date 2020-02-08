@@ -5,6 +5,8 @@ import Overlay from 'Component/Overlay';
 import media, { PRODUCT_MEDIA } from 'Util/Media';
 import './SearchOverlay.override.style.scss';
 
+export const OVERLAY_SEARCH_ITEM_LIMIT = 7;
+
 export default class SearchOverlay extends SourceComponent {
     renderSearchItem(product, i) {
         const { getProductLinkTo } = this.props;
@@ -72,6 +74,20 @@ export default class SearchOverlay extends SourceComponent {
             </p>
         );
     };
+
+    renderSearchResults() {
+        const { searchCriteria, searchResults, isLoading } = this.props;
+
+        if (!searchCriteria) return this.renderNoSearchCriteria();
+        if (!searchResults.length && !isLoading && !this.timeout) return this.renderNoResults();
+        const resultsToRender = (isLoading || this.timeout) ? Array(AMOUNT_OF_PLACEHOLDERS).fill({}) : searchResults;
+
+        return (
+            <ul>
+                { resultsToRender.slice(0, OVERLAY_SEARCH_ITEM_LIMIT).map((item, i) => this.renderSearchItem(item, i)) }
+            </ul>
+        );
+    }
 
     render() {
         return (
