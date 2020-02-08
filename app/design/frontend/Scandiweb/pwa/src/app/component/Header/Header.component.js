@@ -59,7 +59,7 @@ export default class Header extends NavigationAbstract {
     };
 
     static defaultProps = {
-        logo_alt: 'ScandiPWA logo',
+        logo_alt: 'DeGouges',
         header_logo_src: '',
         isLoading: true
     };
@@ -237,44 +237,32 @@ export default class Header extends NavigationAbstract {
         );
     }
 
-    renderLogoImage() {
-        const {
-            header_logo_src,
-            logo_alt
-        } = this.props;
-
-        console.log(this.props);
-
-        return (
-            <Logo
-              src={ media(header_logo_src, LOGO_MEDIA) }
-              alt={ logo_alt }
-            />
-        );
-    }
-
     renderLogo(isVisible = false) {
         const { isLoading } = this.props;
 
         if (isLoading) return null;
 
         return (
-            <Link
-              to="/"
-              aria-label="Go to homepage by clicking on ScandiPWA logo"
-              aria-hidden={ !isVisible }
-              tabIndex={ isVisible ? 0 : -1 }
+            <div
+              key="HeaderLogo"
               block="Header"
               elem="LogoWrapper"
               mods={ { isVisible } }
-              key="logo"
-              itemScope
-              itemType="http://schema.org/Organization"
             >
-                <meta itemProp="legalName" content="ScandiPWA" />
-                <meta itemProp="parentOrganization" content="Scandiweb" />
-                { this.renderLogoImage() }
-            </Link>
+                <Link
+                  to="/"
+                  aria-label={ __('Go to homepage by clicking on ScandiPWA logo') }
+                  aria-hidden={ !isVisible }
+                  tabIndex={ isVisible ? 0 : -1 }
+                  block="Header"
+                  elem="Logo"
+                  mix={ { block: 'Logo', elem: 'Large' } }
+                  mods={ { isVisible } }
+                  key="logo"
+                  itemScope
+                  itemType="http://schema.org/Organization"
+                />
+            </div>
         );
     }
 

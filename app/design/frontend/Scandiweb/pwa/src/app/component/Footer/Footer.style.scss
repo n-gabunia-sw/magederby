@@ -17,6 +17,10 @@
         display: none;
     }
 
+    @include after-mobile {
+        margin-top: 40px;
+    }
+
     &-Link,
     &-Copyright {
         color: inherit;
