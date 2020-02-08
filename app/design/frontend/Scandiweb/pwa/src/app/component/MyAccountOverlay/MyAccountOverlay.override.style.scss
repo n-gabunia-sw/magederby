@@ -1,0 +1,11 @@
+.MyAccountOverlay {
+    &_isLoading {
+        --overlay-content-background: rgba(0, 0, 0, .7);
+
+        .Loader {
+            &-Main {
+                top: 80%;
+            }
+        }
+    }
+}
