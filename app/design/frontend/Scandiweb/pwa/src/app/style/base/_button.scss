@@ -1,0 +1,18 @@
+:root {
+    --button-padding: 13px 22px;
+    --button-color: #{$gold};
+    --button-background: var(--primary-base-color);
+    --button-border: var(--primary-base-color);
+    --button-hover-background: var(--primary-dark-color);
+    --button-hover-color: #{$gold};
+    --button-hover-border: var(--primary-base-color);
+    --button-border-width: 1px;
+}
+
+.Button {
+    @include button;
+}
+
+button {
+    background-color: transparent;
+}
