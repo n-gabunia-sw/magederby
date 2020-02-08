@@ -162,13 +162,24 @@ class SaveCartItem extends  SourceSaveCartItem
                     }
                 }
 
-                if (((int)$quote->getItemsQty() + $qty + $productQtyOrderedByUser) > 5) {
-                    throw new GraphQlInputException(
-                        new Phrase(
-                            'You can buy only 5 pieces of this item per year'
-                        )
-                    );
+                if (isset($requestCartItem['item_id'])) {
+                    if (($qty + $productQtyOrderedByUser) > 5) {
+                        throw new GraphQlInputException(
+                            new Phrase(
+                                'You can buy only 5 pieces of this item per year'
+                            )
+                        );
+                    }
+                } else {
+                    if (((int)$quote->getItemsQty() + $qty + $productQtyOrderedByUser) > 5) {
+                        throw new GraphQlInputException(
+                            new Phrase(
+                                'You can buy only 5 pieces of this item per year'
+                            )
+                        );
+                    }
                 }
+
             }
         }
         return parent::resolve($field, $context, $info, $value, $args);

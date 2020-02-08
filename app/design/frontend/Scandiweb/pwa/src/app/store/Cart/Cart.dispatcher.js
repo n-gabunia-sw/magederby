@@ -16,7 +16,6 @@ export class CartDispatcher extends SourceCartDispatcher {
         const { product, quantity, userId } = options;
         const { sku, type_id: product_type } = product;
 
-        console.log(options);
         const productToAdd = {
             sku,
             product_type,
@@ -38,6 +37,18 @@ export class CartDispatcher extends SourceCartDispatcher {
         }
 
         return Promise.reject();
+    }
+
+    changeItemQty(dispatch, options) {
+        const { item_id, quantity, sku, userId } = options;
+
+        return fetchMutation(CartQuery.getSaveCartItemMutation(
+            { sku, item_id, qty: quantity, userId },
+            !isSignedIn() && this._getGuestQuoteId()
+        )).then(
+            ({ saveCartItem: { cartData } }) => this._updateCartData(cartData, dispatch),
+            error => dispatch(showNotification('error', error[0].message))
+        );
     }
 }
 
