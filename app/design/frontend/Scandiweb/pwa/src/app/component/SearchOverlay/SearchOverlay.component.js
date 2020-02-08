@@ -1,10 +1,11 @@
-import SourceComponent from 'SourceComponent/SearchOverlay/SearchOverlay.component';
+import SourceComponent, { AMOUNT_OF_PLACEHOLDERS } from 'SourceComponent/SearchOverlay/SearchOverlay.component';
 import Link from 'Component/Link';
 import Image from 'Component/Image';
 import Overlay from 'Component/Overlay';
 import media, { PRODUCT_MEDIA } from 'Util/Media';
 import './SearchOverlay.override.style.scss';
 
+export { AMOUNT_OF_PLACEHOLDERS } from 'SourceComponent/SearchOverlay/SearchOverlay.component';
 export const OVERLAY_SEARCH_ITEM_LIMIT = 7;
 
 export default class SearchOverlay extends SourceComponent {
