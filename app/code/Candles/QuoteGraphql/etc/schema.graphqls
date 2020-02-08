@@ -1,0 +1,8 @@
+type Mutation {
+    saveCartItem(cartItem: CartItemInput!, guestCartId: String): Query @resolver(class:"\\Candles\\QuoteGraphql\\Model\\Resolver\\SaveCartItem")
+
+}
+
+extend input CartItemInput {
+    userId: Int
+}
