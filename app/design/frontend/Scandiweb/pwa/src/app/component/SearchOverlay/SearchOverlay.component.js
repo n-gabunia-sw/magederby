@@ -1,6 +1,7 @@
 import SourceComponent from 'SourceComponent/SearchOverlay/SearchOverlay.component';
 import Link from 'Component/Link';
 import Image from 'Component/Image';
+import media, { PRODUCT_MEDIA } from 'Util/Media';
 
 export default class SearchOverlay extends SourceComponent {
     renderSearchItem(product, i) {
