@@ -15,19 +15,23 @@
 
     &-Secondary {
         --image-mask-width: 50%;
+        --image-mask-rotate: 0deg;
 
         height: 100%;
         left: 0;
         overflow: hidden;
         position: absolute;
         top: 0;
+        transform: rotate(var(--image-mask-rotate));
         width: var(--image-mask-width);
     }
 
     &-SecondaryImage {
+        --image-mask-rotate: 0deg;
         --secondary-image-width: 100%;
 
         height: 100%;
+        transform: rotate(var(--image-mask-rotate));
         width: var(--secondary-image-width);
     }
 

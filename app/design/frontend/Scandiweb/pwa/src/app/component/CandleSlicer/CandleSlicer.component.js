@@ -5,6 +5,8 @@ import Draggable from 'Component/Draggable';
 import './CandleSlicer.style.scss';
 
 export default class CandleSlicer extends PureComponent {
+    rootRef = createRef();
+
     mainRef = createRef();
 
     secondaryRef = createRef();
@@ -14,6 +16,8 @@ export default class CandleSlicer extends PureComponent {
     dragRef = createRef();
 
     originalX = 0;
+
+    currentRotation = 0;
 
     candleData = [
         { name: 'Amaranth', url: '/media/product-images/amaranth.png' },
@@ -29,11 +33,34 @@ export default class CandleSlicer extends PureComponent {
     ];
 
     componentDidMount() {
-        if (!this.mainRef || !this.secondaryRef) return;
+        if (!this.mainRef || !this.secondaryRef || !this.rootRef || !this.dragRef) return;
 
         const { current: { offsetWidth } } = this.mainRef;
+        const { current } = this.rootRef;
 
         CSS.setVariable(this.secondaryRef, 'secondary-image-width', `${offsetWidth}px`)
+        current.addEventListener('wheel', this.rotateImage);
+    }
+
+    componentWillUnmount() {
+        if (!this.rootRef) return;
+
+        const { current } = this.rootRef;
+
+        current.removeEventListener('wheel', this.rotateImage);
+    }
+
+    rotateImage = (event) => {
+        if (!this.maskRef || !this.secondaryRef) return;
+
+        event.preventDefault();
+
+        const { deltaY } = event;
+
+        this.currentRotation += 5 * Math.sign(deltaY);
+
+        CSS.setVariable(this.maskRef, 'image-mask-rotate', `${this.currentRotation}deg`)
+        CSS.setVariable(this.secondaryRef, 'image-mask-rotate', `${-this.currentRotation}deg`)
     }
 
     onDragStart = () => {
@@ -70,7 +97,7 @@ export default class CandleSlicer extends PureComponent {
 
     render() {
         return (
-            <div block="CandleSlicer">
+            <div block="CandleSlicer" ref={ this.rootRef }>
                 <Image
                   src={ this.candleData[0].url }
                   ratio="square"
