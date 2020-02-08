@@ -1,0 +1,9 @@
+.Logo {
+    &-Large {
+        background: generateImagePath($logos-path, 'DeGouges.png');
+        background-size: cover;
+        display: inline-block;
+        height: 60px;
+        width: 60px;
+    }
+}

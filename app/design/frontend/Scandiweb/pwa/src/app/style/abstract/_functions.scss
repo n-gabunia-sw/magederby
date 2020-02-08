@@ -1,0 +1,4 @@
+@function generateImagePath($base, $path) {
+    $result: url($base + $path) + 'center center no-repeat';
+    @return $result;
+}
