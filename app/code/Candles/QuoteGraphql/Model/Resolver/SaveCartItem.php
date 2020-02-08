@@ -137,8 +137,7 @@ class SaveCartItem extends  SourceSaveCartItem
         if ($attribute == self::DE_GOUGE) {
             $customerId = 9; // TODO: Get customerId from args
             $customer = $this->customerRepository->getById($customerId);
-            $attr = $customer->getCustomAttributes();
-            print_r($attr);
+            $isVip = $customer->getCustomAttribute('is_vip')->getValue();
             if (!$customerId) {
                 throw new GraphQlInputException(
                     new Phrase(
@@ -146,7 +145,7 @@ class SaveCartItem extends  SourceSaveCartItem
                     )
                 );
             }
-            if (true) { // TODO: If customer is not vip
+            if (!$isVip) {
                 $ordercollection = $this->orderCollection->create()->addFieldToFilter('customer_id', $customerId);
                 $productQtyOrderedByUser = 0;
                 foreach ($ordercollection->getAllIds() as $id) {
