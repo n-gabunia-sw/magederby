@@ -1,4 +1,8 @@
 .SearchOverlay {
+    @include after-mobile {
+        max-height: calc(50vh + 50px);
+    }
+
     &-MoreLink {
         margin-bottom: 0;
         background-color: var(--search-criteria-background);
