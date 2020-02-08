@@ -1,0 +1,49 @@
+:root {
+    --slicer-handle-color: rgba(0, 0, 0, .5);
+}
+
+.CandleSlicer {
+    margin: 0 auto;
+    max-width: 500px;
+    overflow: hidden;
+
+    &-SecondaryImage,
+    &-MainImage {
+        width: 100%;
+        display: block;
+    }
+
+    &-Secondary {
+        --image-mask-width: 50%;
+        --image-mask-rotate: 0deg;
+
+        height: 100%;
+        left: 0;
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        transform: rotate(var(--image-mask-rotate));
+        width: var(--image-mask-width);
+    }
+
+    &-SecondaryImage {
+        --image-mask-rotate: 0deg;
+        --secondary-image-width: 100%;
+
+        height: 100%;
+        transform: rotate(var(--image-mask-rotate));
+        width: var(--secondary-image-width);
+    }
+
+    &-Handle {
+        --handle-position: 50%;
+
+        background-color: var(--slicer-handle-color);
+        bottom: 0;
+        cursor: ew-resize;
+        left: var(--handle-position);
+        position: absolute;
+        top: 0;
+        width: 5px;
+    }
+}
