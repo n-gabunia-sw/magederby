@@ -20,10 +20,13 @@ use Magento\Catalog\Model\ProductRepository;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Catalog\Model\Product\Attribute\Repository;
 use Magento\CatalogInventory\Api\StockStatusRepositoryInterface;
-use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Sales\Model\Order;
+use \Magento\Sales\Model\Order\ItemFactory;
+use \Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
 
 /**
  * Class SaveCartItem
+ *
  * @package Candles\QuoteGraphql\Model\Resolver
  */
 class SaveCartItem extends  SourceSaveCartItem
@@ -41,19 +44,30 @@ class SaveCartItem extends  SourceSaveCartItem
     private $quoteRepository;
 
     /**
-     * @var CustomerSession
+     * @var Order
      */
-    protected $customerSession;
+    private $orderModel;
+
+    /**
+     * @var ItemFactory
+     */
+    private $orderItem;
+
+    /**
+     * @var CollectionFactory
+     */
+    private $orderCollection;
 
     /**
      * SaveCartItem constructor.
-     * @param QuoteIdMaskFactory $quoteIdMaskFactory
-     * @param CartRepositoryInterface $quoteRepository
-     * @param ParamOverriderCartId $overriderCartId
-     * @param ProductRepository $productRepository
-     * @param Repository $attributeRepository
-     * @param QuoteIdMask $quoteIdMaskResource
-     * @param Configurable $configurableType
+     *
+     * @param QuoteIdMaskFactory             $quoteIdMaskFactory
+     * @param CartRepositoryInterface        $quoteRepository
+     * @param ParamOverriderCartId           $overriderCartId
+     * @param ProductRepository              $productRepository
+     * @param Repository                     $attributeRepository
+     * @param QuoteIdMask                    $quoteIdMaskResource
+     * @param Configurable                   $configurableType
      * @param StockStatusRepositoryInterface $stockStatusRepository
      */
     public function __construct(
@@ -65,9 +79,10 @@ class SaveCartItem extends  SourceSaveCartItem
         QuoteIdMask $quoteIdMaskResource,
         Configurable $configurableType,
         StockStatusRepositoryInterface $stockStatusRepository,
-        CustomerSession $customerSession
-    )
-    {
+        Order $orderModel,
+        ItemFactory $orderItem,
+        CollectionFactory $orderCollection
+    ) {
         parent::__construct(
             $quoteIdMaskFactory,
             $quoteRepository,
@@ -81,15 +96,19 @@ class SaveCartItem extends  SourceSaveCartItem
 
         $this->quoteIdMaskFactory = $quoteIdMaskFactory;
         $this->quoteRepository = $quoteRepository;
-        $this->customerSession = $customerSession;
+        $this->orderModel = $orderModel;
+
+        $this->orderItem = $orderItem;
+        $this->orderCollection = $orderCollection;
+
     }
 
     /**
-     * @param Field $field
-     * @param ContextInterface $context
-     * @param ResolveInfo $info
-     * @param array|null $value
-     * @param array|null $args
+     * @param  Field            $field
+     * @param  ContextInterface $context
+     * @param  ResolveInfo      $info
+     * @param  array|null       $value
+     * @param  array|null       $args
      * @return Value|mixed|void
      * @throws Exception
      */
@@ -99,17 +118,59 @@ class SaveCartItem extends  SourceSaveCartItem
         ResolveInfo $info,
         array $value = null,
         array $args = null
-    )
-    {
+    ) {
         $requestCartItem = $args['cartItem'];
-        $product = $this->productRepository->get($this->getSku($requestCartItem));
+
+        $quoteId = isset($args['guestCartId'])
+            ? $this->getGuestQuoteId($args['guestCartId'])
+            : $this->overriderCartId->getOverriddenValue();
+        $quote = $this->quoteRepository->getActive($quoteId);
+        ['qty' => $qty] = $requestCartItem;
+
+        $product = $this->productRepository->get($this->getSku($requestCartItem));;
         $attribute = $product->getAttributeText('brand');
         if ($attribute == self::DE_GOUGE) {
-            $customer = $this->customerSession->getCustomer();
-            if (!$customer->getId()) {
-                throw new GraphQlInputException(new Phrase('You should log in to buy this product'));
+            $customerId = 7; // TODO: Get customerId from args
+            if (!$customerId) {
+                throw new GraphQlInputException(
+                    new Phrase(
+                        'You should log in to buy this product'
+                    )
+                );
+            }
+            if (true) { // TODO: If customer is not vip
+                $ordercollection = $this->orderCollection->create()->addFieldToFilter('customer_id', $customerId);
+                $productQtyOrderedByUser = 0;
+                foreach ($ordercollection->getAllIds() as $id) {
+                    $orderModel = $this->orderModel->load($id);
+                    $orders = $orderModel->getAllItems();
+                    foreach ($orders as $order) {
+                        if ($order->getProductId() ==  $product->getId()
+                            && !$this->itemDateIsValid($product->getCreatedAt())
+                        ) {
+                            $productQtyOrderedByUser += (int)$order->getQtyOrdered();
+                        }
+                    }
+                }
+
+                if (((int)$quote->getItemsQty() + $qty + $productQtyOrderedByUser) > 5) {
+                    throw new GraphQlInputException(
+                        new Phrase(
+                            'You can buy only 5 pieces of this item per year. 
+                            You have already bought '
+                            . $productQtyOrderedByUser
+                        )
+                    );
+                }
             }
         }
-        parent::resolve($field, $context, $info, $value, $args);
+        return parent::resolve($field, $context, $info, $value, $args);
+    }
+
+    private function itemDateIsValid($itemDate)
+    {
+        $currentDate = date('Y');
+        $itemDateYear = date('Y', strtotime($itemDate));
+        return $itemDateYear != $currentDate;
     }
 }
