@@ -111,7 +111,7 @@
     "redux-devtools": "^3.4.2",
     "sass-loader": "^7.1.0",
     "sass-resources-loader": "^2.0.0",
-    "stylelint": "^10.1.0",
+    "stylelint": "^15.10.1",
     "stylelint-config-standard": "^18.3.0",
     "stylelint-order": "^3.0.1",
     "stylelint-scss": "^3.9.4",
